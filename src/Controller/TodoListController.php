@@ -42,12 +42,7 @@ class TodoListController
         $todoList = $this->listManager->create($parameters);
         $todoListSerialized = $this->serializer->serialize($todoList, 'json');
         
-        $response = new Response();
-
-        $response->setContent($todoListSerialized);
-        $response->headers->set('Content-Type', 'application/json');
-        $response->setStatusCode(200);
-        
+        $response = new Response($todoListSerialized, 200, ['Content-Type' => 'application/json']);
         return $response;
     }
 
@@ -57,7 +52,21 @@ class TodoListController
         int $id
     ): Response
     {
+        $parameters = json_decode($request->getContent(), true);
 
+        if (!$parameters) {
+            throw new \Exception("Missing required parameters");
+        }
+        
+        try {
+            $todoList = $this->listManager->rename($id, $parameters['name']);
+            $todoListSerialized = $this->serializer->serialize($todoList, 'json');
+    
+            $response = new Response($todoListSerialized, 200, ['Content-Type' => 'application/json']);
+            return $response;
+        } catch (NotFoundHttpException $e) {
+            return new Response('unable to find item', 404);
+        }
     }
 
     #[Route('/list/delete/{id}', name: 'delete_list', methods: ['DELETE'])]
@@ -68,7 +77,7 @@ class TodoListController
     {
         if (!$id) {
             throw new \Exception("no id provided");
-        }        
+        }
         
         $this->logger->info("Received delete request for list '$id'");
 

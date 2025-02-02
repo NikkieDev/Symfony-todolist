@@ -18,7 +18,7 @@ class Todolist
     #[ORM\Column(length: 64)]
     private ?string $name = null;
 
-    #[Orm\OneToMany(targetEntity: Item::class, mappedBy: 'todolist', cascade: ['persist', 'remove'], orphanRemoval: true)] // orphanRemoval -> removes item from db if removed from this collection
+    #[Orm\OneToMany(targetEntity: Item::class, mappedBy: 'todoList', cascade: ['persist', 'remove'], orphanRemoval: true)] // orphanRemoval -> removes item from db if removed from this collection
     private Collection $items;
 
     public function getId(): ?int

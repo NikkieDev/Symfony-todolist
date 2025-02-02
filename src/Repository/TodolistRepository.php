@@ -18,13 +18,27 @@ class TodolistRepository extends ServiceEntityRepository
         parent::__construct($registry, Todolist::class);
     }
 
-    public function findAndDelete(int $id): ?string
+    public function findAndRename(int $id, string $name): Todolist
     {
-        $repository = $this->getEntityManager()->getRepository(Todolist::class);
-        $todoList = $repository->find($id);
+        $todoList = $this->find($id);
 
         if (!$todoList) {
-            throw new NotFoundHttpException("Todolist not found!");
+            throw new NotFoundHttpException("Todolist '$id' not found!");
+        }
+
+        $todoList->setName($name);
+        $this->getEntityManager()->persist($todoList);
+        $this->getEntityManager()->flush();
+        
+        return $todoList;
+    }
+
+    public function findAndDelete(int $id): ?string
+    {
+        $todoList = $this->find($id);
+
+        if (!$todoList) {
+            throw new NotFoundHttpException("Todolist '$id' not found!");
         }
 
         $this->createQueryBuilder('t')

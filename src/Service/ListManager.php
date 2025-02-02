@@ -33,6 +33,14 @@ class ListManager
         return $todoList;
     }
 
+    public function rename(int $id, string $name): Todolist
+    {
+        $this->logger->info("Renaming list id '$id' to '$name'");
+     
+        $todoList = $this->repository->findAndRename($id, $name);
+        return $todoList;
+    }
+
     public function delete(int $id): void
     {
         $name = $this->repository->findAndDelete($id);
