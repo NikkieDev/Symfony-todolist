@@ -7,6 +7,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Psr\Log\LoggerInterface;
 
 use App\Entity\Todolist;
@@ -50,11 +51,20 @@ class TodoListController
         return $response;
     }
 
+    #[Route('/list/name/{id}', name: 'rename_list', methods: ['PUT'])]
+    public function renameList(
+        Request $request,
+        int $id
+    ): Response
+    {
+
+    }
+
     #[Route('/list/delete/{id}', name: 'delete_list', methods: ['DELETE'])]
     public function deleteList(
         Request $request,
         int $id
-        ): Response
+    ): Response
     {
         if (!$id) {
             throw new \Exception("no id provided");
@@ -62,7 +72,12 @@ class TodoListController
         
         $this->logger->info("Received delete request for list '$id'");
 
-        $this->listManager->delete($id);
-        return new Response('ok', 201);
+        try {
+            $this->listManager->delete($id);
+        } catch (NotFoundHttpException $e) {
+            return new Response('unable to find item', 404);
+        }
+
+        return new Response('ok', 200);
     }
 }
