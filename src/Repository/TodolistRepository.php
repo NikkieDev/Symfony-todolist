@@ -16,6 +16,16 @@ class TodolistRepository extends ServiceEntityRepository
         parent::__construct($registry, Todolist::class);
     }
 
+    public function findAndDelete(int $id): void
+    {
+        $this->createQueryBuilder('t')
+            ->delete(Todolist::class, 't')
+            ->where('t.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->execute();
+    }
+
     //    /**
     //     * @return Todolist[] Returns an array of Todolist objects
     //     */

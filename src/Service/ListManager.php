@@ -17,7 +17,7 @@ class ListManager
     {
         $this->logger = $logger;
         $this->entityManager = $entityManager;
-        // $this->repository = 
+        $this->repository = $this->entityManager->getRepository(Todolist::class);
     }
 
     public function create($parameters): Todolist
@@ -33,7 +33,8 @@ class ListManager
         return $todoList;
     }
 
-    public function delete(int $id): bool
+    public function delete(int $id): void
     {
+        $this->repository->findAndDelete($id);
     }
 }

@@ -50,17 +50,18 @@ class TodoListController
         return $response;
     }
 
-    #[Route('/list/delete/{id}', name: 'delete_list', methods: ['GET', 'DELETE'])]
+    #[Route('/list/delete/{id}', name: 'delete_list', methods: ['DELETE'])]
     public function deleteList(
         Request $request,
         int $id
         ): Response
     {
-        $this->logger->info("Reached endpoint");
         if (!$id) {
             throw new \Exception("no id provided");
-        }
-        $this->logger->info("Hitting the service");
+        }        
+        
+        $this->logger->info("Received delete request for list '$id'");
+
         $this->listManager->delete($id);
         return new Response('ok', 201);
     }
