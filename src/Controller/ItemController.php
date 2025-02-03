@@ -44,7 +44,7 @@ class ItemController
 
             $this->logger->info("Item '" . $item->getName() . "' received from itemManager");
 
-            $itemSerialized = $this->serializer->serialize($item, 'json', ['groups' => ['todoList:read']]);
+            $itemSerialized = $this->serializer->serialize($item, 'json');
             $this->logger->info("Item serialized: " . $itemSerialized); // Issue serializing.
 
             return new Response($itemSerialized, 200, ['Content-Type' => 'application/json']);

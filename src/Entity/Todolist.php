@@ -13,15 +13,12 @@ class Todolist
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['todoList:read', 'item:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 64)]
-    #[Groups(['todoList:read', 'item:read'])]
     private ?string $name = null;
 
     #[Orm\OneToMany(targetEntity: Item::class, mappedBy: 'todoList', cascade: ['persist', 'remove'], orphanRemoval: true)] // orphanRemoval -> removes item from db if removed from this collection
-    #[Groups(['todoList:read'])]
     private Collection $items;
 
     public function getId(): ?int
@@ -57,7 +54,7 @@ class Todolist
     public function remoteItem(Item $item): self
     {
         if ($this->items->removeElement($item)) {
-            if ($item->getTodoList() === $this) {
+            if ($item->getTodoListId() === $this->getId()) {
                 $item->setTodoList(null);
             }
         }

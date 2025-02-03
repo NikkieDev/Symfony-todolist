@@ -18,6 +18,34 @@ class TodolistRepository extends ServiceEntityRepository
         parent::__construct($registry, Todolist::class);
     }
 
+    public function findMostRecent(): array
+    {
+        $multipleLists = $this->findBy([],['id'=>"DESC"], 10);
+
+        if (count($multipleLists) <= 0) {
+            throw new NotFoundHttpException("No lists found");
+        }
+
+        return $multipleLists;
+    }
+
+    public function findPaginated(int $startingId, int $limit = 5): array
+    {
+        $multipleLists = $this->createQueryBuilder('t')
+            ->where('t.id > :startingId')
+            ->setParameter('startingId', $startingId)
+            ->orderBy('t.id', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+
+        if (count($multipleLists) <= 0) {
+            throw new NotFoundHttpException("No lists found");
+        }
+
+        return $multipleLists;
+    }
+
     public function findAndRename(int $id, string $name): Todolist
     {
         $todoList = $this->find($id);

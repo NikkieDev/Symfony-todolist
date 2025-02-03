@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\HttpFoundatio4n\Request;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Psr\Log\LoggerInterface;
@@ -27,6 +27,38 @@ class TodoListController
         $this->listManager = $listManager;
         $this->serializer = $serializer;
         $this->logger = $logger;
+    }
+
+    #[Route('/lists', name: 'recent_lists', methods: ['GET'])]
+    public function getLists(Request $request): Response
+    {
+        $startingId = (int) $request->headers->get('x-next-starting-id', 0);
+        $multipleTodoLists = [];
+
+        try {
+            if ($startingId == 0) {
+                $multipleTodoLists = $this->listManager->getMostRecent();
+            } else if ($startingId <= -1) {
+                return new Response(null, 404);
+            } else {
+                $multipleTodoLists = $this->listManager->getPaginated($startingId);
+            }
+    
+            $newLastId = count($multipleTodoLists) > 0 ? end($multipleTodoLists)->getId() : -1;
+    
+            $multipleTodoListsSerialized = $this->serializer->serialize($multipleTodoLists, 'json');
+            $headers = [
+                'Content-Type' => 'application/json'
+            ];
+    
+            if ($newLastId > 0) {
+                $headers['x-next-starting-id'] = $newLastId;
+            }
+    
+            return new Response($multipleTodoListsSerialized, 200, $headers);
+        } catch (NotFoundHttpException $e) {
+            return new Response($e->getMessage(), 404, ['Content-Type' => 'plain/text']);
+        }
     }
 
     #[Route('/list/create', name:"create_list", methods: ['POST'])]

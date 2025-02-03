@@ -49,4 +49,20 @@ class ListManager
             $this->logger->warning("Deleted list '$name'");
         }
     }
+
+    public function getMostRecent(): array
+    {
+        $this->logger->info("Fetching most recent lists");
+        $multipleLists = $this->repository->findMostRecent();
+
+        return $multipleLists;
+    }
+
+    public function getPaginated(int $startingId): array
+    {
+        $this->logger->info("Fetching paginated, start: " . $startingId);
+        $multipleLists = $this->repository->findPaginated($startingId);
+
+        return $multipleLists;
+    }
 }
