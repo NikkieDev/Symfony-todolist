@@ -44,9 +44,14 @@ class ListManager
     public function delete(int $id): void
     {
         $name = $this->repository->findAndDelete($id);
+        $items = $this->itemRepository->findAndDeleteByList($id);
         
         if ($name) {
             $this->logger->warning("Deleted list '$name'");
+        }
+
+        foreach ($items as $item) {
+            $this->logger->warning("Deleted item: " . $item->getName());
         }
     }
 

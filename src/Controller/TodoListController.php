@@ -32,7 +32,7 @@ class TodoListController
     }
 
     #[Route('/lists', name: 'recent_lists', methods: ['GET'])]
-    public function getLists(Request $request): JsonResponse
+    public function getLists(Request $request): JsonResponse | Response
     {
         $startingId = (int) $request->headers->get('x-next-starting-id', 0);
         $multipleTodoLists = [];
@@ -41,7 +41,7 @@ class TodoListController
             if ($startingId == 0) {
                 $multipleTodoLists = $this->listManager->getMostRecent();
             } else if ($startingId <= -1) {
-                return new JsonResponse(null, 404);
+                return new Response(null, 404);
             } else {
                 $multipleTodoLists = $this->listManager->getPaginated($startingId);
             }
@@ -57,7 +57,7 @@ class TodoListController
                 $headers['x-next-starting-id'] = $newLastId;
             }
     
-            return new JsonResponse($multipleTodoListsSerialized, 200, $headers);
+            return new Response($multipleTodoListsSerialized, 200, $headers);
         } catch (NotFoundHttpException $e) {
             $jsonResponse = ['message'=>$e->getMessage()];
             return new JsonResponse($jsonResponse, 404, ['Content-Type' => 'application/json']);
@@ -65,7 +65,7 @@ class TodoListController
     }
 
     #[Route('/list/create', name:"create_list", methods: ['POST'])]
-    public function createList(Request $request): JsonResponse
+    public function createList(Request $request): Response
     {
         $parameters = json_decode($request->getContent(), true);
 
@@ -76,7 +76,7 @@ class TodoListController
         $todoList = $this->listManager->create($parameters);
         $todoListSerialized = $this->serializer->serialize($todoList, 'json');
         
-        $response = new JsonResponse($todoListSerialized, 200, ['Content-Type' => 'application/json']);
+        $response = new Response($todoListSerialized, 200, ['Content-Type' => 'application/json']);
         return $response;
     }
 
@@ -84,7 +84,7 @@ class TodoListController
     public function renameList(
         Request $request,
         int $id
-    ): JsonResponse
+    ): JsonResponse | Response
     {
         $parameters = json_decode($request->getContent(), true);
 
@@ -96,7 +96,7 @@ class TodoListController
             $todoList = $this->listManager->rename($id, $parameters['name']);
             $todoListSerialized = $this->serializer->serialize($todoList, 'json');
     
-            $response = new JsonResponse($todoListSerialized, 200, ['Content-Type' => 'application/json']);
+            $response = new Response($todoListSerialized, 200, ['Content-Type' => 'application/json']);
             return $response;
         } catch (NotFoundHttpException $e) {
             $jsonResponse = ['message'=>'unable to find item'];

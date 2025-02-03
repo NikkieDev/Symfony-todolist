@@ -74,7 +74,17 @@ class ItemController
         }
     }
 
-    #[Route('/item/delete', name: 'delete_item', methods: ['DELETE'])]
+    #[Route('/item/description', name: 'change_item_description', methods: ['PUT'])]// Make endpoint to change item description
+    public function changeItemDescription(
+        Request $request,
+        int $id
+    ): Response
+    {
+        return new Response('not implemented', 501);
+    }
+    
+
+    #[Route('/item/delete', name: 'delete_item', methods: ['DELETE'])] // Make endpoint to delete item
     public function deleteItem(Request $request): Response
     {
         return new Response('not implemented', 501);

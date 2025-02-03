@@ -15,4 +15,9 @@ class ItemRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Item::class);
     }
+
+    public function findAndDeleteByList(int $listId)
+    {
+        // * Delete list -> should also delete associated items
+    }
 }
