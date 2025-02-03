@@ -12,19 +12,24 @@ class Item
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['item:read', 'todoList:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 32)]
+    #[Groups(['item:read', 'todoList:read'])]
     private ItemStatus $status = ItemStatus::New;
 
     #[ORM\Column(length: 64)]
+    #[Groups(['item:read', 'todoList:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 512, nullable: true)]
+    #[Groups(['item:read', 'todoList:read'])]
     private ?string $description = null;
 
     #[ORM\ManyToOne(targetEntity: Todolist::class, inversedBy: 'items')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['item:read'])]
     private ?TodoList $todoList = null;
 
     public function getId(): ?int
