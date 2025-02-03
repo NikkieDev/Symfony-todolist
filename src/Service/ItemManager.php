@@ -8,6 +8,8 @@ use App\Service\ListManager;
 use App\Entity\Todolist;
 use App\Entity\Item;
 
+use App\Objects\ItemStatus;
+
 class ItemManager
 {
     private LoggerInterface $logger;
@@ -42,6 +44,23 @@ class ItemManager
         $this->entityManager->flush();
 
         $this->logger->info("Item '" . $item->getName() . "' was created");
+
+        return $item;
+    }
+
+    public function changeStatus(int $id, ItemStatus $newStatus): Item
+    {
+        $item = $this->itemRepository->find($id);
+
+        if (!$item) {
+            throw new NotFoundHttpException("Item not found");
+        }
+
+        $this->logger->info("Changing item '" . $item->getName() . "' status to '" . $newStatus->name . "' ");
+
+        $item->setStatus($newStatus);
+        $this->entityManager->persist($item);
+        $this->entityManager->flush();
 
         return $item;
     }
